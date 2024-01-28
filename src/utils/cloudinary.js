@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import { ApiError } from "./ApiError";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
@@ -31,4 +32,18 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-export { uploadOnCloudinary };
+const deleteFile = async (localID) => {
+  try {
+    if (!localID) {
+      throw new ApiError(400, "File path not found!!");
+    }
+    const deletresponse = await cloudinary.uploader.destroy(publicid, {
+      resource_type: "video",
+    });
+    return deletresponse;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+export { uploadOnCloudinary, deleteFile };
